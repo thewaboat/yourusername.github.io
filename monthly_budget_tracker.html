@@ -105,7 +105,6 @@ input:focus { outline: none; border-color: #0f9488; box-shadow: 0 0 0 3px rgba(1
 .badge.safe { background: #d1fae5; color: #065f46; }
 .badge.warning { background: #fef3c7; color: #92400e; }
 .badge.danger { background: #fee2e2; color: #991b1b; }
-
 /* ======= DISCRETIONARY SECTION ======= */
 .disc-section {
   background: linear-gradient(135deg, #f0f9ff 0%, #f0fdf4 100%);
@@ -181,7 +180,6 @@ input:focus { outline: none; border-color: #0f9488; box-shadow: 0 0 0 3px rgba(1
 .disc-btn:hover { border-color: #0f9488; color: #0f9488; background: #f0fdfa; }
 .disc-btn.active { border-color: #0f9488; color: #0f9488; background: #f0fdfa; }
 /* ===================================== */
-
 .fixed-costs-list { margin-bottom: 1rem; }
 .fixed-cost-item {
   background: white; border: 1px solid #e5eef7;
@@ -300,12 +298,86 @@ input:focus { outline: none; border-color: #0f9488; box-shadow: 0 0 0 3px rgba(1
 .hist-table tr:last-child td { border-bottom: none; }
 .hist-table .food-cell { color: #0f9488; font-weight: 700; }
 .hist-table .hi { background: #fff7ed; }
+
+/* ======= CALCULATOR ======= */
+.calc-fab {
+  position: fixed; bottom: 1.25rem; right: 1.25rem; z-index: 90;
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, #0f9488 0%, #14b8a6 100%);
+  color: white; border: none; cursor: pointer;
+  font-size: 1.5rem; box-shadow: 0 6px 18px rgba(15,148,136,0.4);
+  transition: all 0.2s; display: flex; align-items: center; justify-content: center;
+}
+.calc-fab:hover { transform: scale(1.08); box-shadow: 0 8px 24px rgba(15,148,136,0.5); }
+.calc-fab:active { transform: scale(0.96); }
+.calc-panel {
+  position: fixed; bottom: 5.5rem; right: 1.25rem; z-index: 91;
+  width: 280px; background: white; border-radius: 1rem;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.25); border: 1px solid #e5eef7;
+  padding: 1rem; display: none;
+  animation: calcIn 0.18s ease-out;
+}
+.calc-panel.active { display: block; }
+@keyframes calcIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.calc-head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 0.75rem;
+}
+.calc-title { font-size: 0.8rem; font-weight: 700; color: #0f2e4d; }
+.calc-close {
+  background: #f1f5f9; border: none; color: #64748b;
+  width: 26px; height: 26px; border-radius: 50%; cursor: pointer;
+  font-size: 0.9rem; font-weight: 700; transition: all 0.15s;
+}
+.calc-close:hover { background: #e2e8f0; color: #1a2a3a; }
+.calc-expr {
+  text-align: right; font-size: 0.8rem; color: #94a3b8;
+  min-height: 1.1rem; margin-bottom: 0.15rem; word-break: break-all;
+  font-variant-numeric: tabular-nums;
+}
+.calc-display {
+  text-align: right; font-size: 1.9rem; font-weight: 800; color: #0f2e4d;
+  background: #f8fafc; border-radius: 0.6rem; padding: 0.65rem 0.85rem;
+  margin-bottom: 0.75rem; word-break: break-all; min-height: 3.1rem;
+  display: flex; align-items: center; justify-content: flex-end;
+  font-variant-numeric: tabular-nums;
+}
+.calc-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem;
+}
+.calc-key {
+  padding: 0.85rem 0; border: none; border-radius: 0.6rem;
+  font-size: 1.1rem; font-weight: 700; cursor: pointer;
+  background: #f1f5f9; color: #1a2a3a; transition: all 0.12s;
+  font-family: inherit;
+}
+.calc-key:hover { background: #e2e8f0; }
+.calc-key:active { transform: scale(0.94); }
+.calc-key.op { background: #e0f2fe; color: #0369a1; }
+.calc-key.op:hover { background: #bae6fd; }
+.calc-key.fn { background: #fee2e2; color: #991b1b; }
+.calc-key.fn:hover { background: #fecaca; }
+.calc-key.eq { background: linear-gradient(135deg, #0f9488 0%, #14b8a6 100%); color: white; }
+.calc-key.eq:hover { filter: brightness(1.05); }
+.calc-key.zero { grid-column: span 2; }
+.calc-use {
+  width: 100%; margin-top: 0.6rem; padding: 0.6rem;
+  background: #0f2e4d; color: white; border: none;
+  border-radius: 0.6rem; font-weight: 600; font-size: 0.8rem;
+  cursor: pointer; transition: all 0.15s; font-family: inherit;
+}
+.calc-use:hover { background: #1a3f5c; }
+.calc-use-hint { font-size: 0.68rem; color: #94a3b8; text-align: center; margin-top: 0.4rem; }
 @media (max-width: 640px) {
   .navbar-content { flex-direction: column; gap: 1rem; }
   .summary-grid { grid-template-columns: 1fr; }
   .cost-input-row { grid-template-columns: 1fr; }
   .month-nav { width: 100%; }
   .month-display { width: 100%; }
+  .calc-panel { width: calc(100vw - 2rem); right: 1rem; left: 1rem; }
 }
 </style>
 </head>
@@ -321,7 +393,6 @@ input:focus { outline: none; border-color: #0f9488; box-shadow: 0 0 0 3px rgba(1
     <button class="btn-new-month" onclick="showNewMonthModal()">+ เริ่มเดือนใหม่</button>
   </div>
 </div>
-
 <div class="container">
   <!-- Main Card -->
   <div class="card">
@@ -338,7 +409,6 @@ input:focus { outline: none; border-color: #0f9488; box-shadow: 0 0 0 3px rgba(1
       <div class="cycle-display" id="cycleRange">-</div>
       <div class="helper-text">ตัวอย่าง: ตั้ง 20 = รอบเงิน "20 เดือนนี้ - 19 เดือนถัดไป"</div>
     </div>
-
     <!-- Fixed Costs Section -->
     <div class="settings-card">
       <div class="settings-title">💳 ค่าใช้จ่ายคงที่ (Fixed Costs)</div>
@@ -362,7 +432,6 @@ input:focus { outline: none; border-color: #0f9488; box-shadow: 0 0 0 3px rgba(1
       </div>
       <div class="budget-breakdown" id="budgetBreakdown"></div>
     </div>
-
     <!-- Summary: Progress + Badges -->
     <div style="margin-top:1.25rem;">
       <div class="progress-wrap">
@@ -375,14 +444,12 @@ input:focus { outline: none; border-color: #0f9488; box-shadow: 0 0 0 3px rgba(1
         </div>
       </div>
       <div class="badge-list" id="badgeList"></div>
-
       <!-- ===== DISCRETIONARY BUDGET SECTION ===== -->
       <div class="disc-section">
         <div class="disc-header">
           <div class="disc-header-title">🛍️ งบพิเศษที่เหลือ (ซื้อของ / ของขวัญ)</div>
           <span class="disc-days-badge" id="discDaysBadge">? วันที่เหลือ</span>
         </div>
-
         <!-- Food target input -->
         <div class="disc-input-row">
           <label>ตั้งเป้าอาหาร/วัน:</label>
@@ -391,7 +458,6 @@ input:focus { outline: none; border-color: #0f9488; box-shadow: 0 0 0 3px rgba(1
           <span class="unit">฿</span>
           <span class="disc-hint" id="discFoodHint"></span>
         </div>
-
         <!-- Result box -->
         <div class="disc-result-box">
           <div class="disc-row">
@@ -407,10 +473,8 @@ input:focus { outline: none; border-color: #0f9488; box-shadow: 0 0 0 3px rgba(1
             <span id="discFinal" class="disc-final-warn">-</span>
           </div>
         </div>
-
         <!-- Alert box -->
         <div class="disc-alert warn" id="discAlert">-</div>
-
         <!-- Scenario buttons -->
         <div class="disc-scenarios">
           <span class="disc-scenarios-label">ลองใช้ค่า →</span>
@@ -424,19 +488,16 @@ input:focus { outline: none; border-color: #0f9488; box-shadow: 0 0 0 3px rgba(1
       <!-- ========================================= -->
     </div>
   </div>
-
   <!-- Tabs -->
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('input',this)">✏️ บันทึกวันนี้</button>
     <button class="tab-btn" onclick="switchTab('summary',this)">📊 วิเคราะห์</button>
     <button class="tab-btn" onclick="switchTab('backup',this)">💾 Backup</button>
   </div>
-
   <!-- Input Tab -->
   <div id="tab-input" class="tab-content active">
     <div class="days-container" id="daysContainer"></div>
   </div>
-
   <!-- Summary Tab -->
   <div id="tab-summary" class="tab-content">
     <!-- Overview boxes -->
@@ -461,7 +522,6 @@ input:focus { outline: none; border-color: #0f9488; box-shadow: 0 0 0 3px rgba(1
         </div>
       </div>
     </div>
-
     <!-- Historical comparison -->
     <div class="card">
       <h2>📅 ประวัติค่าอาหาร/วัน (ย้อนหลัง)</h2>
@@ -507,7 +567,6 @@ input:focus { outline: none; border-color: #0f9488; box-shadow: 0 0 0 3px rgba(1
         * งบใช้จ่ายจริง ฿9,339.95 — เดือนที่ผ่านมาทั้งสองรอบใช้เกินงบ
       </p>
     </div>
-
     <!-- Discretionary projection -->
     <div class="card">
       <h2>🎯 คำนวณงบพิเศษตามเป้าอาหาร</h2>
@@ -538,7 +597,6 @@ input:focus { outline: none; border-color: #0f9488; box-shadow: 0 0 0 3px rgba(1
       </div>
     </div>
   </div>
-
   <!-- Backup Tab -->
   <div id="tab-backup" class="tab-content">
     <div class="card">
@@ -563,6 +621,40 @@ input:focus { outline: none; border-color: #0f9488; box-shadow: 0 0 0 3px rgba(1
   </div>
 </div>
 
+<!-- ===== CALCULATOR ===== -->
+<button class="calc-fab" id="calcFab" onclick="toggleCalc()" title="เครื่องคิดเลข">🧮</button>
+<div class="calc-panel" id="calcPanel">
+  <div class="calc-head">
+    <span class="calc-title">🧮 เครื่องคิดเลข</span>
+    <button class="calc-close" onclick="toggleCalc()">✕</button>
+  </div>
+  <div class="calc-expr" id="calcExpr">&nbsp;</div>
+  <div class="calc-display" id="calcDisplay">0</div>
+  <div class="calc-grid">
+    <button class="calc-key fn" onclick="calcClear()">C</button>
+    <button class="calc-key fn" onclick="calcBack()">⌫</button>
+    <button class="calc-key op" onclick="calcOp('%')">%</button>
+    <button class="calc-key op" onclick="calcOp('/')">÷</button>
+    <button class="calc-key" onclick="calcNum('7')">7</button>
+    <button class="calc-key" onclick="calcNum('8')">8</button>
+    <button class="calc-key" onclick="calcNum('9')">9</button>
+    <button class="calc-key op" onclick="calcOp('*')">×</button>
+    <button class="calc-key" onclick="calcNum('4')">4</button>
+    <button class="calc-key" onclick="calcNum('5')">5</button>
+    <button class="calc-key" onclick="calcNum('6')">6</button>
+    <button class="calc-key op" onclick="calcOp('-')">−</button>
+    <button class="calc-key" onclick="calcNum('1')">1</button>
+    <button class="calc-key" onclick="calcNum('2')">2</button>
+    <button class="calc-key" onclick="calcNum('3')">3</button>
+    <button class="calc-key op" onclick="calcOp('+')">+</button>
+    <button class="calc-key zero" onclick="calcNum('0')">0</button>
+    <button class="calc-key" onclick="calcNum('.')">.</button>
+    <button class="calc-key eq" onclick="calcEquals()">=</button>
+  </div>
+  <button class="calc-use" onclick="calcUseResult()">📋 ใส่ค่าลงช่อง / คัดลอก</button>
+  <div class="calc-use-hint">แตะช่องกรอกเงินก่อน แล้วกดปุ่มนี้เพื่อใส่ค่าอัตโนมัติ</div>
+</div>
+
 <!-- New Month Modal -->
 <div id="modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);z-index:100;align-items:center;justify-content:center;">
   <div style="background:white;border-radius:1.25rem;padding:2rem;max-width:400px;width:90%;box-shadow:0 20px 50px rgba(0,0,0,0.2);">
@@ -574,7 +666,6 @@ input:focus { outline: none; border-color: #0f9488; box-shadow: 0 0 0 3px rgba(1
     </div>
   </div>
 </div>
-
 <script>
 // ============ Config ============
 const GROSS_INCOME = 31400;
@@ -584,24 +675,21 @@ const CATEGORIES = [
   { key: "shopping", label: "Shopping/Entertain",        icon: "🛍️" },
   { key: "family",   label: "ครอบครัว/งาน",              icon: "👥" }
 ];
-
 // ============ Historical data (ย้อนหลัง 2 เดือน) ============
 const HIST = [
   { period: "26 มี.ค.–25 เม.ย. 69", days: 31, food: 17017.87, shopping: 5842.22, family: 832.75 },
   { period: "26 เม.ย.–25 พ.ค. 69",  days: 30, food: 7938.26,  shopping: 3164.54, family: 491.00 }
 ];
-// คำนวณ avg จากเดือนล่าสุดและ 2-month avg
-const HIST_LAST_FOOD_PER_DAY  = Math.round(HIST[1].food / HIST[1].days); // 265
+const HIST_LAST_FOOD_PER_DAY  = Math.round(HIST[1].food / HIST[1].days);
 const HIST_2MO_FOOD_PER_DAY   = Math.round(
-  (HIST[0].food + HIST[1].food) / (HIST[0].days + HIST[1].days)          // 409
+  (HIST[0].food + HIST[1].food) / (HIST[0].days + HIST[1].days)
 );
-
 // ============ State ============
 let currentDate = new Date();
 let appData = {};
 let allMonths = {};
 let budgetCycleStartDay = 20;
-
+let lastFocusedAmountInput = null;
 // ============ Date Functions ============
 function getMonthKey(date) {
   const y = date.getFullYear();
@@ -655,7 +743,6 @@ function formatCycleRange(startDay) {
   const e = `${range.end.getDate()} ${mn[range.end.getMonth()+1]}`;
   return `${s} – ${e} ${range.start.getFullYear() + 543}`;
 }
-
 // ============ Utility Functions ============
 function sanitize(v) {
   const raw = String(v == null ? "" : v).replace(/[^0-9.]/g, "");
@@ -676,7 +763,6 @@ function setText(id, val) {
   const el = document.getElementById(id);
   if (el) el.textContent = val;
 }
-
 // ============ Data Functions ============
 function emptyMonthData() {
   const data = {
@@ -716,32 +802,26 @@ function calcSummary() {
   const totalFixed   = getTotalFixedCosts();
   const usableBudget = GROSS_INCOME - totalFixed - EMERGENCY_RESERVE;
   const dailyRec     = usableBudget / cycleDates.length;
-
   cycleDates.forEach(d => {
     const row = appData.days[d.iso] || {};
     CATEGORIES.forEach(c => { totals[c.key] += parseAmt(row[c.key]); });
   });
-
   const totalSpent  = totals.food + totals.shopping + totals.family;
   const remaining   = usableBudget - totalSpent;
-
   const spentDays = cycleDates.filter(d => {
     const row = appData.days[d.iso] || {};
     return CATEGORIES.reduce((s, c) => s + parseAmt(row[c.key]), 0) > 0;
   }).length;
-
   const remainingDays  = Math.max(cycleDates.length - spentDays, 0);
   const plannedByNow   = dailyRec * spentDays;
   const over           = Math.max(totalSpent - plannedByNow, 0);
   const adjDaily       = remainingDays > 0 ? Math.max(remaining, 0) / remainingDays : 0;
   const progress       = Math.min(100, Math.max(0, (totalSpent / usableBudget) * 100));
-
   return {
     totals, totalSpent, remaining, dailyRec, spentDays, remainingDays,
     adjDaily, progress, cycleDates, usableBudget, over
   };
 }
-
 // ============ Discretionary Budget ============
 function calcDisc(targetFoodPerDay, s) {
   s = s || calcSummary();
@@ -749,48 +829,35 @@ function calcDisc(targetFoodPerDay, s) {
   const discretionary = s.remaining - projected;
   return { projected, discretionary };
 }
-
 function updateDiscretionary() {
   const s = calcSummary();
   const targetEl = document.getElementById("targetFoodPerDay");
   if (!targetEl) return;
-
   const target   = parseAmt(targetEl.value);
   const d        = calcDisc(target, s);
   const breakeven = s.remainingDays > 0 ? s.remaining / s.remainingDays : 0;
   const currentFoodAvg = s.spentDays > 0 ? s.totals.food / s.spentDays : 0;
-
-  // Badge
   setText("discDaysBadge", s.remainingDays + " วันที่เหลือ");
-
-  // Hint
   const hintEl = document.getElementById("discFoodHint");
   if (hintEl) {
     hintEl.textContent = currentFoodAvg > 0
       ? `(เดือนนี้เฉลี่ย ฿${Math.round(currentFoodAvg)}/วัน)`
       : "";
   }
-
-  // Current-month avg button
   const curBtn = document.getElementById("discCurrentBtn");
   if (curBtn && currentFoodAvg > 0) {
     curBtn.style.display = "inline-block";
     curBtn.textContent = `฿${Math.round(currentFoodAvg)} (เดือนนี้)`;
   }
-
-  // Result box
   setText("discRemaining", fmt(s.remaining));
   setText("discFoodLabel", `คาดอาหาร ${s.remainingDays} วัน (฿${target}/วัน)`);
   setText("discFoodProj",  `-${fmt(d.projected)}`);
-
   const finalEl = document.getElementById("discFinal");
   if (finalEl) {
     finalEl.textContent = fmt(d.discretionary);
     finalEl.className = d.discretionary >= 500  ? "disc-final-pos"  :
                         d.discretionary >= 0     ? "disc-final-warn" : "disc-final-neg";
   }
-
-  // Alert
   const alertEl = document.getElementById("discAlert");
   if (alertEl) {
     if (d.discretionary >= 500) {
@@ -805,8 +872,6 @@ function updateDiscretionary() {
         ต้องลดอาหารเหลือ <strong>฿${Math.floor(breakeven)}/วัน</strong> ถึงจะไม่ขาดทุน`;
     }
   }
-
-  // Summary tab projections
   const projections = [
     { id: "projAt150", val: 150 },
     { id: "projAt200", val: 200 },
@@ -820,11 +885,8 @@ function updateDiscretionary() {
     el.textContent = fmt(disc);
     el.style.color = disc >= 500 ? "#059669" : disc >= 0 ? "#d97706" : "#dc2626";
   });
-
   const beEl = document.getElementById("breakevenAmount");
   if (beEl) beEl.textContent = `฿${Math.floor(breakeven)}`;
-
-  // Summary tab historical row
   setText("histFoodThisMonth",     fmt(s.totals.food));
   setText("histFoodPerDayThisMonth", s.spentDays > 0
     ? `฿${Math.round(s.totals.food / s.spentDays)}/วัน` : "-");
@@ -832,7 +894,6 @@ function updateDiscretionary() {
   setText("histFamilyThisMonth",   fmt(s.totals.family));
   setText("histTotalThisMonth",    fmt(s.totalSpent));
 }
-
 function setFoodTarget(val, btn) {
   const el = document.getElementById("targetFoodPerDay");
   if (el) el.value = val;
@@ -840,31 +901,24 @@ function setFoodTarget(val, btn) {
   if (btn) btn.classList.add("active");
   updateDiscretionary();
 }
-
 function setFoodTargetCurrent(btn) {
   const s = calcSummary();
   const avg = s.spentDays > 0 ? Math.round(s.totals.food / s.spentDays) : 265;
   setFoodTarget(avg, btn);
 }
-
 // ============ UI Functions ============
 function refreshUI() {
   const s = calcSummary();
-
   document.getElementById("progressFill").style.width = s.progress + "%";
   document.getElementById("lblSpent").textContent     = fmt(s.totalSpent);
   document.getElementById("lblRemaining").textContent = fmt(s.remaining);
-
   let statusBadge = s.remaining < 0
     ? '<span class="badge danger">⚠️ ติดลบแล้ว</span>'
     : '<span class="badge safe">✓ ควบคุมได้</span>';
-
   document.getElementById("badgeList").innerHTML = statusBadge
     + '<span class="badge">🍽️ ' + fmt(s.totals.food)     + '</span>'
     + '<span class="badge">🛍️ ' + fmt(s.totals.shopping) + '</span>'
     + '<span class="badge">👥 ' + fmt(s.totals.family)    + '</span>';
-
-  // Day cards
   s.cycleDates.forEach(d => {
     const row = appData.days[d.iso] || {};
     const dt  = CATEGORIES.reduce((sum, c) => sum + parseAmt(row[c.key]), 0);
@@ -878,32 +932,24 @@ function refreshUI() {
       card.querySelector(".day-status").className   = "day-status " + (isOver ? "over" : "ok");
     }
   });
-
-  // Summary tab boxes
   setText("sDays",   s.spentDays + " / " + s.remainingDays);
   setText("sDaily",  fmt(s.adjDaily));
   setText("sFoodAvg", s.spentDays > 0
     ? fmt(s.totals.food / s.spentDays) : "-");
   setText("sNonFood", fmt(s.totals.shopping + s.totals.family));
-
-  // Discretionary
   updateDiscretionary();
 }
-
 function buildDays() {
   const s = calcSummary();
   const container = document.getElementById("daysContainer");
   container.innerHTML = "";
-
   s.cycleDates.forEach(d => {
     const row = appData.days[d.iso] || { food:"", shopping:"", family:"", note:"" };
     const dt  = CATEGORIES.reduce((sum, c) => sum + parseAmt(row[c.key]), 0);
     const isOver = dt > s.dailyRec;
-
     const div = document.createElement("div");
     div.className = "day-card" + (isOver ? " over" : "");
     div.id = "card_" + d.iso;
-
     const catHtml = CATEGORIES.map(c => `
       <div class="input-group">
         <label class="input-label"><span>${c.icon}</span> ${c.label}</label>
@@ -911,7 +957,6 @@ function buildDays() {
                data-iso="${d.iso}" data-field="${c.key}" />
       </div>
     `).join("");
-
     div.innerHTML = `
       <div class="day-header">
         <div>
@@ -932,15 +977,18 @@ function buildDays() {
     `;
     container.appendChild(div);
   });
-
   container.addEventListener("input", e => {
     const el = e.target;
     if (el.dataset.iso && el.dataset.field) {
       updateField(el.dataset.iso, el.dataset.field, el.value);
     }
   });
+  container.addEventListener("focusin", e => {
+    if (e.target.dataset.field && e.target.dataset.field !== "note") {
+      lastFocusedAmountInput = e.target;
+    }
+  });
 }
-
 function renderFixedCosts() {
   const container = document.getElementById("fixedCostsList");
   const costs = getFixedCosts();
@@ -953,13 +1001,11 @@ function renderFixedCosts() {
     </div>
   `).join("");
 }
-
 function refreshBudgetBreakdown() {
   const totalFixed   = getTotalFixedCosts();
   const usableBudget = GROSS_INCOME - totalFixed - EMERGENCY_RESERVE;
   const cycleDates   = getCycleDates(budgetCycleStartDay);
   const dailyBudget  = usableBudget / cycleDates.length;
-
   const breakdown = document.getElementById("budgetBreakdown");
   if (breakdown) {
     breakdown.innerHTML = `
@@ -986,7 +1032,6 @@ function refreshBudgetBreakdown() {
     `;
   }
 }
-
 function switchTab(name, btn) {
   document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
   document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
@@ -994,7 +1039,6 @@ function switchTab(name, btn) {
   btn.classList.add("active");
   if (name === "summary") updateDiscretionary();
 }
-
 // ============ Fixed Costs Functions ============
 function toggleAddCostForm() {
   document.getElementById("addCostForm").classList.toggle("active");
@@ -1017,7 +1061,6 @@ function deleteFixedCost(id) {
   appData._fixedCosts = getFixedCosts().filter(c => c.id !== id);
   renderFixedCosts(); refreshBudgetBreakdown(); scheduleAutoSave();
 }
-
 // ============ Month Navigation ============
 function updateStartDay() {
   const newDay = parseInt(document.getElementById("startDay").value, 10);
@@ -1064,7 +1107,6 @@ function confirmNewMonth() {
   loadMonth(); closeModal();
   alert("เริ่มเดือนใหม่สำเร็จ");
 }
-
 // ============ Storage Functions ============
 function saveToLocalStorage() {
   const dataToSave = {
@@ -1090,7 +1132,6 @@ function scheduleAutoSave() {
   clearTimeout(autoSaveTimer);
   autoSaveTimer = setTimeout(saveToLocalStorage, 1000);
 }
-
 // ============ Export/Import Functions ============
 function exportData() {
   const json = JSON.stringify({
@@ -1129,7 +1170,135 @@ function importData() {
   };
   input.click();
 }
+// ============ CALCULATOR ============
+let calcCurrent  = "0";
+let calcPrevious = null;
+let calcOperator = null;
+let calcResetNext = false;
 
+function calcFormatNumber(numStr) {
+  if (numStr === "" || numStr == null) return "0";
+  const n = parseFloat(numStr);
+  if (!isFinite(n)) return "0";
+  if (typeof numStr === "string" && (numStr.endsWith(".") || /\.\d*0$/.test(numStr))) {
+    const parts = numStr.split(".");
+    const intPart = parseFloat(parts[0] || "0").toLocaleString("en-US");
+    return intPart + "." + (parts[1] || "");
+  }
+  return n.toLocaleString("en-US", { maximumFractionDigits: 6 });
+}
+function calcRender() {
+  const disp = document.getElementById("calcDisplay");
+  const expr = document.getElementById("calcExpr");
+  if (disp) disp.textContent = calcFormatNumber(calcCurrent);
+  if (expr) {
+    if (calcPrevious !== null && calcOperator) {
+      const opSym = { '+':'+', '-':'−', '*':'×', '/':'÷', '%':'%' }[calcOperator] || calcOperator;
+      expr.textContent = `${calcFormatNumber(String(calcPrevious))} ${opSym}`;
+    } else {
+      expr.innerHTML = "&nbsp;";
+    }
+  }
+}
+function calcNum(d) {
+  if (calcResetNext) { calcCurrent = "0"; calcResetNext = false; }
+  if (d === ".") {
+    if (!calcCurrent.includes(".")) calcCurrent += ".";
+  } else {
+    calcCurrent = (calcCurrent === "0") ? d : calcCurrent + d;
+  }
+  calcRender();
+}
+function calcOp(op) {
+  if (calcOperator && !calcResetNext) {
+    calcEquals(true);
+  } else {
+    calcPrevious = parseFloat(calcCurrent);
+  }
+  calcOperator = op;
+  calcResetNext = true;
+  calcRender();
+}
+function calcCompute(a, b, op) {
+  switch (op) {
+    case '+': return a + b;
+    case '-': return a - b;
+    case '*': return a * b;
+    case '/': return b === 0 ? NaN : a / b;
+    case '%': return a * (b / 100);
+    default:  return b;
+  }
+}
+function calcEquals(chain) {
+  if (calcOperator === null || calcPrevious === null) return;
+  const a = calcPrevious;
+  const b = parseFloat(calcCurrent);
+  let result = calcCompute(a, b, calcOperator);
+  if (!isFinite(result)) {
+    calcCurrent = "0";
+    document.getElementById("calcDisplay").textContent = "Error";
+    calcPrevious = null; calcOperator = null; calcResetNext = true;
+    return;
+  }
+  result = Math.round(result * 1000000) / 1000000;
+  calcCurrent = String(result);
+  if (chain) {
+    calcPrevious = result;
+  } else {
+    calcPrevious = null;
+    calcOperator = null;
+  }
+  calcResetNext = true;
+  calcRender();
+}
+function calcClear() {
+  calcCurrent = "0"; calcPrevious = null; calcOperator = null; calcResetNext = false;
+  calcRender();
+}
+function calcBack() {
+  if (calcResetNext) return;
+  calcCurrent = calcCurrent.length > 1 ? calcCurrent.slice(0, -1) : "0";
+  if (calcCurrent === "" || calcCurrent === "-") calcCurrent = "0";
+  calcRender();
+}
+function calcUseResult() {
+  const val = parseFloat(calcCurrent);
+  const clean = isFinite(val) ? String(Math.round(val * 100) / 100) : "0";
+  if (lastFocusedAmountInput && document.body.contains(lastFocusedAmountInput)) {
+    lastFocusedAmountInput.value = clean;
+    if (lastFocusedAmountInput.dataset.iso && lastFocusedAmountInput.dataset.field) {
+      updateField(lastFocusedAmountInput.dataset.iso, lastFocusedAmountInput.dataset.field, clean);
+    }
+    lastFocusedAmountInput.style.borderColor = "#0f9488";
+    setTimeout(() => { lastFocusedAmountInput.style.borderColor = ""; }, 600);
+    alert("✅ ใส่ค่า " + clean + " ลงในช่องแล้ว");
+  } else {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(clean).then(
+        () => alert("📋 คัดลอก " + clean + " แล้ว"),
+        () => alert("ผลลัพธ์: " + clean)
+      );
+    } else {
+      alert("ผลลัพธ์: " + clean + "\n(แตะช่องกรอกเงินก่อน แล้วกดปุ่มนี้เพื่อใส่อัตโนมัติ)");
+    }
+  }
+}
+function toggleCalc() {
+  document.getElementById("calcPanel").classList.toggle("active");
+}
+document.addEventListener("keydown", e => {
+  const panel = document.getElementById("calcPanel");
+  if (!panel || !panel.classList.contains("active")) return;
+  if (e.key >= "0" && e.key <= "9") { calcNum(e.key); e.preventDefault(); }
+  else if (e.key === ".") { calcNum("."); e.preventDefault(); }
+  else if (e.key === "+") { calcOp("+"); e.preventDefault(); }
+  else if (e.key === "-") { calcOp("-"); e.preventDefault(); }
+  else if (e.key === "*") { calcOp("*"); e.preventDefault(); }
+  else if (e.key === "/") { calcOp("/"); e.preventDefault(); }
+  else if (e.key === "Enter" || e.key === "=") { calcEquals(); e.preventDefault(); }
+  else if (e.key === "Backspace") { calcBack(); e.preventDefault(); }
+  else if (e.key === "Escape") { calcClear(); }
+});
 // ============ Init ============
 function init() {
   if (!loadFromLocalStorage()) {
@@ -1137,17 +1306,14 @@ function init() {
     currentDate.setDate(1);
     appData = emptyMonthData();
   }
-  // Default food target = เดือนล่าสุด avg
   const targetEl = document.getElementById("targetFoodPerDay");
   if (targetEl) targetEl.value = HIST_LAST_FOOD_PER_DAY;
-
   loadMonth();
+  calcRender();
 }
-
 document.getElementById("modal").onclick = e => {
   if (e.target.id === "modal") closeModal();
 };
-
 init();
 </script>
 </body>
