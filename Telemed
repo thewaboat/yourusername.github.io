@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Telemed Tracker — ถุงค้างชำระ & การเงินตีกลับ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F7F8; --surface:#FFFFFF; --ink:#1B2B33; --muted:#5C7078; --line:#DFE7EA;
+  --cold:#1E9E6A; --cold-soft:#E4F5EE;
+  --f1:#2B7FD4; --f1-soft:#E7F1FB;
+  --purple:#8A5CC7; --purple-soft:#F1EAFA;
+  --warn:#D98A12; --warn-soft:#FCF3E2;
+  --danger:#D64545; --danger-soft:#FBE9E9;
+  --ok:#1E9E6A;
+  --radius:14px;
+  font-size:15px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;padding-bottom:90px}
+h1,h2,h3{font-family:'Anuphan',sans-serif}
+button{font-family:inherit;cursor:pointer;border:none;background:none;font-size:1rem}
+input,select,textarea{font-family:inherit;font-size:1rem;border:1.5px solid var(--line);border-radius:10px;padding:9px 12px;width:100%;background:#fff;color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--f1);outline-offset:1px;border-color:var(--f1)}
+label{font-size:.85rem;font-weight:600;color:var(--muted);display:block;margin-bottom:4px}
+
+header{background:linear-gradient(135deg,#173A4D 0%,#1F5570 60%,#1E7A6E 100%);color:#fff;padding:22px 18px 18px}
+.header-inner{max-width:960px;margin:0 auto}
+header .eyebrow{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;opacity:.75;font-weight:600}
+header h1{font-size:1.45rem;font-weight:700;margin-top:2px}
+header .sub{font-size:.85rem;opacity:.8;margin-top:2px}
+.stats{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.stat{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:12px;padding:8px 14px;min-width:96px}
+.stat b{font-family:'Anuphan';font-size:1.4rem;display:block;line-height:1.15}
+.stat span{font-size:.75rem;opacity:.85}
+.stat.hot{background:rgba(214,69,69,.35);border-color:rgba(255,255,255,.35)}
+.stat.warm{background:rgba(217,138,18,.3)}
+.stat.green{background:rgba(30,158,106,.35)}
+
+.tabs{max-width:960px;margin:14px auto 0;padding:0 18px;display:flex;gap:8px}
+.tab{flex:1;padding:11px 8px;border-radius:12px;border:1.5px solid var(--line);background:#fff;font-family:'Anuphan';font-weight:600;font-size:.95rem;color:var(--muted);transition:all .15s}
+.tab.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tab .n{display:inline-block;min-width:22px;padding:0 6px;border-radius:99px;background:rgba(255,255,255,.2);font-size:.78rem;margin-left:6px}
+.tab:not(.on) .n{background:#EEF2F4;color:var(--muted)}
+.tab:not(.on) .n.alert{background:var(--danger-soft);color:var(--danger)}
+
+.toolbar{max-width:960px;margin:14px auto 0;padding:0 18px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.toolbar input[type=search]{flex:1;min-width:180px}
+.toolbar select{width:auto}
+.btn{border-radius:10px;padding:9px 16px;font-weight:600;transition:transform .06s ease, box-shadow .15s ease}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--ink);color:#fff}
+.btn-primary:hover{box-shadow:0 3px 10px rgba(27,43,51,.3)}
+.btn-green{background:var(--cold);color:#fff}
+.btn-ghost{border:1.5px solid var(--line);background:#fff;color:var(--ink)}
+.btn-sm{padding:5px 11px;font-size:.85rem;border-radius:8px}
+
+main{max-width:960px;margin:14px auto;padding:0 18px;display:grid;gap:12px}
+.empty{text-align:center;color:var(--muted);padding:60px 20px;background:var(--surface);border:1.5px dashed var(--line);border-radius:var(--radius)}
+.empty b{font-family:'Anuphan';font-size:1.05rem;color:var(--ink);display:block;margin-bottom:6px}
+
+.bag{background:var(--surface);border:1.5px solid var(--line);border-radius:var(--radius);overflow:hidden;display:grid;grid-template-columns:10px 1fr;transition:box-shadow .15s}
+.bag:hover{box-shadow:0 4px 14px rgba(27,43,51,.08)}
+.bag .strip{background:var(--muted)}
+.bag[data-type="cold"] .strip{background:var(--cold)}
+.bag[data-type="normal"] .strip{background:var(--f1)}
+.bag[data-type="special"] .strip{background:var(--purple)}
+.bag[data-type="green"] .strip{background:repeating-linear-gradient(45deg,var(--cold),var(--cold) 8px,#7BC9A6 8px,#7BC9A6 16px)}
+.bag.closed{opacity:.62}
+.bag-body{padding:13px 15px 12px}
+.bag-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
+.bag-id{font-family:'Anuphan';font-weight:700;font-size:1.08rem}
+.bag-id small{font-weight:500;color:var(--muted);font-size:.82rem;margin-left:8px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.chip{font-size:.74rem;font-weight:600;border-radius:99px;padding:2.5px 10px;background:#EEF2F4;color:var(--muted)}
+.chip.cold,.chip.green{background:var(--cold-soft);color:var(--cold)}
+.chip.normal{background:var(--f1-soft);color:var(--f1)}
+.chip.special{background:var(--purple-soft);color:var(--purple)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.danger{background:var(--danger-soft);color:var(--danger)}
+.chip.ok{background:var(--cold-soft);color:var(--ok)}
+.chip.flag{background:#FFF2D9;color:#9A6A00}
+
+.age{margin-top:10px}
+.age-row{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);margin-bottom:3px}
+.age-row b{color:var(--ink)}
+.age-track{height:7px;border-radius:99px;background:#E9EEF0;overflow:hidden;position:relative}
+.age-fill{height:100%;border-radius:99px;background:var(--ok);transition:width .3s}
+.age-fill.warn{background:linear-gradient(90deg,var(--ok),var(--warn))}
+.age-fill.danger{background:linear-gradient(90deg,var(--warn),var(--danger))}
+.age-mark{position:absolute;right:0;top:-2px;bottom:-2px;width:2px;background:rgba(27,43,51,.35)}
+
+.progress-pips{display:flex;gap:4px;margin-top:9px}
+.pip{flex:1;height:6px;border-radius:99px;background:#E9EEF0}
+.pip.done{background:var(--cold)}
+
+.bag-notes{font-size:.85rem;color:var(--muted);margin-top:8px;white-space:pre-wrap}
+.bag-actions{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}
+.calls{margin-top:9px;border-top:1px dashed var(--line);padding-top:8px;font-size:.82rem}
+.calls .call{display:flex;gap:8px;color:var(--muted);padding:2px 0}
+.calls .call b{color:var(--ink);font-weight:600;white-space:nowrap}
+
+.overlay{position:fixed;inset:0;background:rgba(15,30,38,.5);display:none;align-items:flex-start;justify-content:center;padding:24px 14px;overflow:auto;z-index:50}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:16px;max-width:560px;width:100%;padding:20px;animation:pop .18s ease}
+@keyframes pop{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion: reduce){.modal{animation:none}.btn:active{transform:none}}
+.modal h2{font-size:1.15rem;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.modal h2 .x{font-size:1.3rem;color:var(--muted);padding:2px 8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{margin-bottom:12px}
+.seg{display:flex;gap:0;border:1.5px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{flex:1;padding:9px 4px;font-size:.86rem;font-weight:600;color:var(--muted);background:#fff}
+.seg button.on[data-v="cold"]{background:var(--cold-soft);color:var(--cold)}
+.seg button.on[data-v="normal"]{background:var(--f1-soft);color:var(--f1)}
+.seg button.on[data-v="special"]{background:var(--purple-soft);color:var(--purple)}
+.seg button.on[data-v="am"],.seg button.on[data-v="pm"]{background:var(--ink);color:#fff}
+.check-row{display:flex;align-items:flex-start;gap:10px;padding:9px 11px;border:1.5px solid var(--line);border-radius:10px;margin-bottom:8px;cursor:pointer}
+.check-row input{width:18px;height:18px;margin-top:3px;flex:none;accent-color:var(--ok)}
+.check-row.done{background:var(--cold-soft);border-color:var(--cold)}
+.check-row.critical{border-color:#F0B9B9}
+.check-row.critical.done{background:var(--cold-soft);border-color:var(--cold)}
+.check-row .t b{display:block;font-size:.92rem}
+.check-row .t span{font-size:.8rem;color:var(--muted)}
+.check-row .t .crit{color:var(--danger);font-weight:600}
+.aware{background:var(--warn-soft);border:1.5px solid #F0D9A8;border-radius:10px;padding:10px 12px;font-size:.83rem;margin:10px 0}
+.aware b{display:block;margin-bottom:4px;color:var(--warn)}
+.aware ul{padding-left:18px}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+.danger-text{color:var(--danger)}
+
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;padding:10px 20px;border-radius:99px;font-size:.88rem;transition:transform .25s;z-index:99;box-shadow:0 6px 20px rgba(0,0,0,.25);max-width:92vw;text-align:center}
+#toast.show{transform:translateX(-50%) translateY(0)}
+
+footer{max-width:960px;margin:26px auto 0;padding:0 18px;display:flex;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:.8rem;align-items:center;justify-content:space-between}
+footer .io{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}header h1{font-size:1.25rem}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="eyebrow">OPD Pharmacy · Ramathibodi · Telemed</div>
+    <h1>Telemed Tracker</h1>
+    <div class="sub">ถุงค้างชำระ (เก็บไม่เกิน 1 เดือน) · เคสการเงินตีกลับ tag เขียว (รอบเช้า/บ่าย)</div>
+    <div class="stats" id="stats"></div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button class="tab on" data-tab="bags" onclick="switchTab('bags')">🛍 ถุงค้างชำระ<span class="n" id="nBags">0</span></button>
+  <button class="tab" data-tab="greens" onclick="switchTab('greens')">🏷 การเงินตีกลับ<span class="n" id="nGreens">0</span></button>
+</nav>
+
+<div class="toolbar">
+  <input type="search" id="search" placeholder="ค้นหา คิว / HN / ชื่อ…">
+  <select id="filterStatus">
+    <option value="active">เฉพาะเคสค้าง</option>
+    <option value="all">ทั้งหมด</option>
+    <option value="waiting">รอติดตาม</option>
+    <option value="dissolving">กำลังสลายถุง</option>
+    <option value="closed">ปิดเคสแล้ว</option>
+  </select>
+  <select id="filterGreen" style="display:none">
+    <option value="active">เฉพาะเคสค้าง</option>
+    <option value="all">ทั้งหมด</option>
+    <option value="am">รอบเช้า</option>
+    <option value="pm">รอบบ่าย</option>
+    <option value="closed">ปิดเคสแล้ว</option>
+  </select>
+  <button class="btn btn-primary" id="addBagBtn" onclick="openForm()">+ รับถุงเข้า</button>
+  <button class="btn btn-green" id="addGreenBtn" style="display:none" onclick="openGreenForm()">+ รับเคสตีกลับ</button>
+</div>
+
+<main id="list"></main>
+
+<footer>
+  <span>ข้อมูลเก็บในเครื่องนี้เท่านั้น — สำรองไฟล์เป็นประจำ</span>
+  <div class="io">
+    <button class="btn btn-ghost btn-sm" onclick="exportJSON()">สำรองข้อมูล (JSON)</button>
+    <button class="btn btn-ghost btn-sm" onclick="document.getElementById('importFile').click()">นำเข้า</button>
+    <button class="btn btn-ghost btn-sm" onclick="exportCSV()">ส่งออก CSV (แท็บนี้)</button>
+    <input type="file" id="importFile" accept=".json" hidden onchange="importJSON(event)">
+  </div>
+</footer>
+
+<!-- ===== Bag: Add/Edit ===== -->
+<div class="overlay" id="formOverlay">
+  <div class="modal">
+    <h2><span id="formTitle">รับถุงเข้า</span><button class="x" onclick="closeAll()">✕</button></h2>
+    <div class="grid2">
+      <div class="field"><label>เลขคิว (7xxx)</label><input id="fQueue" placeholder="เช่น K7044"></div>
+      <div class="field"><label>HN</label><input id="fHN" placeholder="HN"></div>
+    </div>
+    <div class="field"><label>ชื่อผู้ป่วย (ไม่บังคับ)</label><input id="fName"></div>
+    <div class="grid2">
+      <div class="field"><label>วันที่รับถุงเข้า</label><input type="date" id="fDate"></div>
+      <div class="field"><label>เบอร์ติดต่อ</label><input id="fPhone" placeholder="08x-xxx-xxxx"></div>
+    </div>
+    <div class="field">
+      <label>ประเภทถุง (ตามอัตราเรียกเก็บ)</label>
+      <div class="seg" id="fType">
+        <button data-v="normal">ยาปกติ · 100</button>
+        <button data-v="cold">ยาแช่เย็น · 200</button>
+        <button data-v="special">ยาพิเศษแช่เย็น · 300</button>
+      </div>
+    </div>
+    <div class="field">
+      <label class="check-row" style="margin:0"><input type="checkbox" id="fPaidShip">
+        <span class="t"><b>ชำระค่าส่งแล้ว แต่ไม่ชำระค่ายา</b><span>การเงินคืนค่าส่งได้แต่ถอนไม่ได้ → ประวัติจะค้างระบบ ต้องแจ้งคนทำ check out + บอกผู้ช่วยไม่ต้อง c/o</span></span>
+      </label>
+    </div>
+    <div class="field"><label>หมายเหตุ</label><textarea id="fNotes" rows="2" placeholder="เช่น มีเอกสารแผนกอื่นติดในถุง / order F1 อย่างเดียว"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeAll()">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveForm()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Green case: Add/Edit ===== -->
+<div class="overlay" id="greenFormOverlay">
+  <div class="modal">
+    <h2><span id="gFormTitle">รับเคสการเงินตีกลับ (tag เขียว)</span><button class="x" onclick="closeAll()">✕</button></h2>
+    <div class="field">
+      <label>รอบ</label>
+      <div class="seg" id="gSession">
+        <button data-v="am">🌅 รอบเช้า</button>
+        <button data-v="pm">🌇 รอบบ่าย</button>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>เลขคิว</label><input id="gQueue" placeholder="เช่น K7035"></div>
+      <div class="field"><label>HN</label><input id="gHN"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>ชื่อผู้ป่วย (ไม่บังคับ)</label><input id="gName"></div>
+      <div class="field"><label>เบอร์ติดต่อ</label><input id="gPhone"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>วันที่รับตีกลับ</label><input type="date" id="gDate"></div>
+      <div class="field"><label>เหตุผลที่การเงินตีกลับ</label>
+        <select id="gReason">
+          <option>ผู้ป่วยปฏิเสธรับยา — ไม่สะดวกชำระ</option>
+          <option>วันที่ key สิทธิไม่เข้า / ขอเปลี่ยนสิทธิ</option>
+          <option>ติดต่อไม่ได้ทุกเบอร์ที่มีในระบบ</option>
+          <option>ผู้ป่วยขอลดจำนวนยาที่เสียเงิน</option>
+          <option>อื่นๆ (ระบุในหมายเหตุ)</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>หมายเหตุ</label><textarea id="gNotes" rows="2"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeAll()">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveGreenForm()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Green case: Manage checklist ===== -->
+<div class="overlay" id="greenManageOverlay">
+  <div class="modal">
+    <h2>จัดการเคสตีกลับ <span id="gWho" style="font-size:.85rem;color:var(--muted);font-weight:500"></span><button class="x" onclick="closeAll()">✕</button></h2>
+    <div id="gSteps"></div>
+    <div class="aware">
+      <b>⚠️ โปรดระวังในหน้า Master</b>
+      ต้องลบรายการเดิมออกก่อนเสมอ — ถ้าเลขที่ใบนำทางซ้ำกัน เคสอื่นจะ <b>lock ยิงหัว barcode ต่อไม่ได้</b>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeAll()">ปิดหน้าต่าง</button>
+      <button class="btn btn-ghost danger-text" onclick="greenToDissolve()">🗑 ผู้ป่วยไม่เอายา → ส่งไปสลายถุง</button>
+      <button class="btn btn-primary" id="gFinishBtn" onclick="finishGreen()">เสร็จ — ส่งการเงินแล้ว ปิดเคส</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Call log (shared) ===== -->
+<div class="overlay" id="callOverlay">
+  <div class="modal">
+    <h2>บันทึกการโทร confirm<button class="x" onclick="closeAll()">✕</button></h2>
+    <div class="field"><label>ผลการโทร</label>
+      <select id="cResult">
+        <option value="reach_keep">ติดต่อได้ — ยังต้องการยา / จะมาชำระ</option>
+        <option value="reach_cancel">ติดต่อได้ — ไม่เอายาแล้ว (CF ยกเลิก)</option>
+        <option value="noreach">ติดต่อไม่ได้</option>
+      </select>
+    </div>
+    <div class="field"><label>เหตุผล / รายละเอียด</label>
+      <select id="cReason">
+        <option value="">— เลือกหรือพิมพ์เพิ่มด้านล่าง —</option>
+        <option>มียาเหลือ</option>
+        <option>รับยาจาก รพ.อื่น</option>
+        <option>ไม่สะดวกชำระ จะซื้อข้างนอกเอง</option>
+        <option>ปฏิเสธรับยา / ขอเปลี่ยนสิทธิ</option>
+        <option>ขอลดจำนวนยาที่เสียเงิน</option>
+      </select>
+    </div>
+    <div class="field"><textarea id="cNote" rows="2" placeholder="รายละเอียดเพิ่มเติม (คุยกับผู้ป่วยเอง + Add Note ใน MS ด้วย)"></textarea></div>
+    <div class="aware"><b>เตือนความจำ</b>ทุกเคสให้โทร confirm คุยกับผู้ป่วยด้วยตนเองก่อนแก้ไข และ Add Note ใน MS เป็นหลักฐาน</div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeAll()">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveCall()">บันทึกการโทร</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Dissolve checklist ===== -->
+<div class="overlay" id="disOverlay">
+  <div class="modal">
+    <h2>สลายถุงยา <span id="disWho" style="font-size:.85rem;color:var(--muted);font-weight:500"></span><button class="x" onclick="closeAll()">✕</button></h2>
+    <div id="disSteps"></div>
+    <div class="aware">
+      <b>Be aware of</b>
+      <ul>
+        <li>Improve ใบสั่งยาทิ้งแล้ว แต่มี<b>เอกสารแผนกอื่น</b>ติดอยู่ → แยกเอกสาร ฝากใส่ถุงส่งให้คนไข้ + แจ้ง case ห้อง ปณ.</li>
+        <li>ยาที่ยกเลิก<b>ไม่มี stock ในห้อง</b> → ทำ SAP ขอคืน / ถ้าไม่มีห้องไหน stock เลย สอบถาม cf หัวหน้าก่อน case by case</li>
+      </ul>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeAll()">ปิดหน้าต่าง</button>
+      <button class="btn btn-primary" id="disFinishBtn" onclick="finishDissolve()">สลายเสร็จ — ปิดเคส</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ================= storage ================= */
+const KEY='telemed_bags_v1';
+let memStore=null;
+function loadData(){
+  let raw=null;
+  try{raw=localStorage.getItem(KEY)}catch(e){}
+  if(raw){try{
+    const d=JSON.parse(raw);
+    if(Array.isArray(d))return {bags:d,greens:[]};       // migrate v1 array
+    return {bags:d.bags||[],greens:d.greens||[]};
+  }catch(e){}}
+  return memStore||{bags:[],greens:[]};
+}
+function persist(){
+  const data={bags,greens};
+  try{localStorage.setItem(KEY,JSON.stringify(data))}
+  catch(e){memStore=data;toast('⚠️ บันทึกลงเครื่องไม่ได้ — อย่าลืมสำรอง JSON ก่อนปิดหน้า')}
+}
+let {bags,greens}=loadData();
+
+/* ================= constants ================= */
+const TYPE_LABEL={normal:'ยาปกติ',cold:'ยาแช่เย็น',special:'ยาพิเศษแช่เย็น'};
+const TYPE_FEE={normal:100,cold:200,special:300};
+const LIMIT_DAYS=30;
+const DIS_STEPS=[
+ ['Telemed ถอนค่าส่ง ปณ.','',0],
+ ['Medsure ถอยตรวจ','จากหน้า dispensing ก่อน',0],
+ ['Prescription → improve','ใส่รหัส → HN → เลือกวันดูยาให้ถูก → delete (รอสักพัก หมุนนานไม่ต้องตกใจ)',0],
+ ['Monitoring medsure → search คิว','อย่าลืมเปลี่ยนวันที่!! → กดยกเลิกใบสั่งยา → คืนยอดไป matching',0],
+ ['Move location','ยาเย็นเข้าตู้เย็นทันที!! / ยาแห้งใส่กล่องยา reject รอ move',0],
+ ['เก็บใบสั่งยาที่ improve แยกตามวัน','+ note ในหน้า master ด้วย',0],
+];
+const GREEN_STEPS=[
+ ['โทร confirm คุยกับผู้ป่วยด้วยตนเอง','ทุกเคส ก่อนแก้ไขใดๆ (ใช้ปุ่ม 📞 บันทึกการโทร เก็บหลักฐานไว้ด้วย)',0],
+ ['Add Note ใน MS','เป็นหลักฐานการตกลงกับผู้ป่วย',0],
+ ['แก้ไขรายการตามผลการโทร','เปลี่ยนสิทธิ / ลดจำนวนยา / แก้วันที่ key ฯลฯ',0],
+ ['ลบรายการเดิมออกจากหน้า Master','เลขใบนำทางซ้ำ = เคสอื่น lock ยิงหัว barcode ไม่ได้',1],
+ ['ทำ Report ใบสรุปส่งการเงินใหม่ (ให้ผู้ช่วยทำ)','หรือส่งใบสรุปรายการยา ตามที่ตกลงกับการเงิน — ต้องแจ้งการเงินก่อนว่าเป็นเคสตีกลับของคนนี้',0],
+];
+const SESSION_LABEL={am:'รอบเช้า',pm:'รอบบ่าย'};
+
+/* ================= helpers ================= */
+const $=s=>document.querySelector(s);
+const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const todayISO=()=>new Date().toISOString().slice(0,10);
+function ageDays(b){return Math.floor((new Date(todayISO())-new Date(b.date))/86400000)}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2800)}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function findAny(id){return bags.find(x=>x.id===id)||greens.find(x=>x.id===id)}
+
+/* ================= tabs ================= */
+let activeTab='bags';
+function switchTab(t){
+  activeTab=t;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+  $('#filterStatus').style.display=t==='bags'?'':'none';
+  $('#filterGreen').style.display=t==='greens'?'':'none';
+  $('#addBagBtn').style.display=t==='bags'?'':'none';
+  $('#addGreenBtn').style.display=t==='greens'?'':'none';
+  render();
+}
+
+/* ================= bag render ================= */
+function statusInfo(b){
+  if(b.status==='closed')return {label:b.closeReason||'ปิดเคสแล้ว',cls:''};
+  if(b.status==='dissolving')return {label:'กำลังสลายถุง',cls:'danger'};
+  const noreach=(b.calls||[]).filter(c=>c.result==='noreach').length;
+  const lastCall=(b.calls||[]).slice(-1)[0];
+  if(lastCall&&lastCall.result==='reach_keep')return {label:'ยืนยันแล้ว รอชำระ/มารับ',cls:'ok'};
+  if(lastCall&&lastCall.result==='reach_cancel')return {label:'CF ยกเลิก — รอสลาย',cls:'danger'};
+  if(noreach>0)return {label:`ติดต่อไม่ได้ ${noreach} ครั้ง`,cls:'warn'};
+  return {label:'รอติดตาม',cls:''};
+}
+function callsHTML(b){
+  return (b.calls||[]).slice(-3).map(c=>{
+    const r=c.result==='noreach'?'📵 ติดต่อไม่ได้':c.result==='reach_cancel'?'❌ CF ยกเลิก':'✅ ยืนยันรับยา';
+    return `<div class="call"><b>${c.date}</b><span>${r}${c.reason?' · '+esc(c.reason):''}${c.note?' — '+esc(c.note):''}</span></div>`;
+  }).join('');
+}
+function bagCard(b){
+  const d=ageDays(b);const pct=Math.min(100,d/LIMIT_DAYS*100);
+  const fillCls=d>=25?'danger':d>=15?'warn':'';
+  const st=statusInfo(b);
+  const ageLabel=d>=LIMIT_DAYS?`<b class="danger-text">ครบ ${d} วัน — เกินกำหนด!</b>`:`<b>${d} วัน</b> / ${LIMIT_DAYS}`;
+  const calls=callsHTML(b);
+  const actions=b.status==='closed'
+    ?`<button class="btn btn-ghost btn-sm" onclick="reopen('${b.id}')">เปิดเคสใหม่</button>
+      <button class="btn btn-ghost btn-sm danger-text" onclick="removeBag('${b.id}')">ลบ</button>`
+    :`<button class="btn btn-ghost btn-sm" onclick="openCall('${b.id}')">📞 บันทึกการโทร</button>
+      <button class="btn btn-ghost btn-sm" onclick="closePaid('${b.id}')">✅ ชำระ/รับแล้ว</button>
+      <button class="btn btn-ghost btn-sm danger-text" onclick="openDissolve('${b.id}')">🗑 สลายถุง${b.status==='dissolving'?' (ค้างอยู่)':''}</button>
+      <button class="btn btn-ghost btn-sm" onclick="openForm('${b.id}')">แก้ไข</button>`;
+  return `<div class="bag ${b.status==='closed'?'closed':''}" data-type="${b.type}">
+    <div class="strip"></div>
+    <div class="bag-body">
+      <div class="bag-top">
+        <div class="bag-id">${esc(b.queue)||'—'}<small>HN ${esc(b.hn)||'—'}${b.name?' · '+esc(b.name):''}</small></div>
+        <div style="font-size:.8rem;color:var(--muted)">รับเข้า ${b.date}${b.phone?' · '+esc(b.phone):''}</div>
+      </div>
+      <div class="chips">
+        <span class="chip ${b.type}">${TYPE_LABEL[b.type]} · ${TYPE_FEE[b.type]}.-</span>
+        <span class="chip ${st.cls}">${st.label}</span>
+        ${b.paidShip?'<span class="chip flag">⚠ ชำระค่าส่ง แต่ไม่ชำระค่ายา</span>':''}
+        ${b.fromGreen?'<span class="chip green">🏷 มาจากเคสตีกลับ</span>':''}
+      </div>
+      ${b.status!=='closed'?`<div class="age"><div class="age-row"><span>อายุถุง</span><span>${ageLabel}</span></div>
+        <div class="age-track"><div class="age-fill ${fillCls}" style="width:${pct}%"></div><div class="age-mark"></div></div></div>`:''}
+      ${b.notes?`<div class="bag-notes">📝 ${esc(b.notes)}</div>`:''}
+      ${calls?`<div class="calls">${calls}</div>`:''}
+      <div class="bag-actions">${actions}</div>
+    </div>
+  </div>`;
+}
+
+/* ================= green render ================= */
+function greenStatusInfo(g){
+  if(g.status==='closed')return {label:g.closeReason||'ปิดเคสแล้ว',cls:''};
+  const done=(g.steps||[]).length;
+  if(done>0)return {label:`ดำเนินการแล้ว ${done}/${GREEN_STEPS.length} ขั้น`,cls:'warn'};
+  return {label:'รับเข้าใหม่ — ยังไม่เริ่ม',cls:'danger'};
+}
+function greenCard(g){
+  const st=greenStatusInfo(g);
+  const calls=callsHTML(g);
+  const pips=GREEN_STEPS.map((_,i)=>`<div class="pip ${(g.steps||[]).includes(i)?'done':''}"></div>`).join('');
+  const actions=g.status==='closed'
+    ?`<button class="btn btn-ghost btn-sm" onclick="reopenGreen('${g.id}')">เปิดเคสใหม่</button>
+      <button class="btn btn-ghost btn-sm danger-text" onclick="removeGreen('${g.id}')">ลบ</button>`
+    :`<button class="btn btn-ghost btn-sm" onclick="openCall('${g.id}')">📞 บันทึกการโทร</button>
+      <button class="btn btn-ghost btn-sm" onclick="openGreenManage('${g.id}')">📋 จัดการเคส</button>
+      <button class="btn btn-ghost btn-sm" onclick="openGreenForm('${g.id}')">แก้ไข</button>`;
+  return `<div class="bag ${g.status==='closed'?'closed':''}" data-type="green">
+    <div class="strip"></div>
+    <div class="bag-body">
+      <div class="bag-top">
+        <div class="bag-id">${esc(g.queue)||'—'}<small>HN ${esc(g.hn)||'—'}${g.name?' · '+esc(g.name):''}</small></div>
+        <div style="font-size:.8rem;color:var(--muted)">ตีกลับ ${g.date}${g.phone?' · '+esc(g.phone):''}</div>
+      </div>
+      <div class="chips">
+        <span class="chip green">🏷 tag เขียว · ${SESSION_LABEL[g.session]||''}</span>
+        <span class="chip">${esc(g.reason)}</span>
+        <span class="chip ${st.cls}">${st.label}</span>
+      </div>
+      ${g.status!=='closed'?`<div class="progress-pips">${pips}</div>`:''}
+      ${g.notes?`<div class="bag-notes">📝 ${esc(g.notes)}</div>`:''}
+      ${calls?`<div class="calls">${calls}</div>`:''}
+      <div class="bag-actions">${actions}</div>
+    </div>
+  </div>`;
+}
+
+/* ================= render ================= */
+function render(){
+  const q=($('#search').value||'').toLowerCase();
+  const list=$('#list');
+  const match=x=>!q||((x.queue||'')+' '+(x.hn||'')+' '+(x.name||'')).toLowerCase().includes(q);
+  let html='';
+  if(activeTab==='bags'){
+    const f=$('#filterStatus').value;
+    let shown=bags.filter(b=>{
+      if(!match(b))return false;
+      if(f==='all')return true;
+      if(f==='active')return b.status!=='closed';
+      if(f==='closed')return b.status==='closed';
+      if(f==='dissolving')return b.status==='dissolving';
+      if(f==='waiting')return b.status!=='closed'&&b.status!=='dissolving';
+      return true;
+    });
+    shown.sort((a,b)=>{
+      if((a.status==='closed')!==(b.status==='closed'))return a.status==='closed'?1:-1;
+      return ageDays(b)-ageDays(a);
+    });
+    html=shown.length?shown.map(bagCard).join(''):`<div class="empty"><b>ยังไม่มีเคสในมุมมองนี้</b>กด "+ รับถุงเข้า" เมื่อมีถุงค้างชำระเข้ามาใหม่</div>`;
+  }else{
+    const f=$('#filterGreen').value;
+    let shown=greens.filter(g=>{
+      if(!match(g))return false;
+      if(f==='all')return true;
+      if(f==='active')return g.status!=='closed';
+      if(f==='closed')return g.status==='closed';
+      if(f==='am'||f==='pm')return g.session===f&&g.status!=='closed';
+      return true;
+    });
+    shown.sort((a,b)=>{
+      if((a.status==='closed')!==(b.status==='closed'))return a.status==='closed'?1:-1;
+      return (b.date||'').localeCompare(a.date||'');
+    });
+    html=shown.length?shown.map(greenCard).join(''):`<div class="empty"><b>ยังไม่มีเคสการเงินตีกลับ</b>เมื่อผู้ช่วยนำเคส tag เขียวมาส่ง กด "+ รับเคสตีกลับ" เพื่อเริ่มติดตาม</div>`;
+  }
+  list.innerHTML=html;
+  renderStats();
+}
+function renderStats(){
+  const act=bags.filter(b=>b.status!=='closed');
+  const over=act.filter(b=>ageDays(b)>=LIMIT_DAYS).length;
+  const near=act.filter(b=>ageDays(b)>=25&&ageDays(b)<LIMIT_DAYS).length;
+  const gAct=greens.filter(g=>g.status!=='closed').length;
+  $('#stats').innerHTML=`
+    <div class="stat"><b>${act.length}</b><span>ถุงค้างชำระ</span></div>
+    <div class="stat hot"><b>${over}</b><span>เกิน 1 เดือน</span></div>
+    <div class="stat warm"><b>${near}</b><span>ใกล้ครบกำหนด</span></div>
+    <div class="stat green"><b>${gAct}</b><span>ตีกลับค้างจัดการ</span></div>`;
+  $('#nBags').textContent=act.length;
+  const gn=$('#nGreens');gn.textContent=gAct;gn.classList.toggle('alert',gAct>0);
+}
+
+/* ================= bag add/edit ================= */
+let editId=null,pickedType='normal';
+document.querySelectorAll('#fType button').forEach(btn=>btn.onclick=()=>{
+  pickedType=btn.dataset.v;
+  document.querySelectorAll('#fType button').forEach(x=>x.classList.toggle('on',x===btn));
+});
+function openForm(id){
+  editId=id||null;
+  const b=id?bags.find(x=>x.id===id):null;
+  $('#formTitle').textContent=b?'แก้ไขเคส':'รับถุงเข้า';
+  $('#fQueue').value=b?b.queue:'';$('#fHN').value=b?b.hn:'';$('#fName').value=b?b.name||'':'';
+  $('#fDate').value=b?b.date:todayISO();$('#fPhone').value=b?b.phone||'':'';
+  $('#fNotes').value=b?b.notes||'':'';$('#fPaidShip').checked=b?!!b.paidShip:false;
+  pickedType=b?b.type:'normal';
+  document.querySelectorAll('#fType button').forEach(x=>x.classList.toggle('on',x.dataset.v===pickedType));
+  $('#formOverlay').classList.add('open');$('#fQueue').focus();
+}
+function saveForm(){
+  const queue=$('#fQueue').value.trim(),hn=$('#fHN').value.trim();
+  if(!queue&&!hn){toast('กรอกเลขคิวหรือ HN อย่างน้อยหนึ่งอย่าง');return}
+  const data={queue,hn,name:$('#fName').value.trim(),date:$('#fDate').value||todayISO(),
+    phone:$('#fPhone').value.trim(),type:pickedType,notes:$('#fNotes').value.trim(),paidShip:$('#fPaidShip').checked};
+  if(editId){Object.assign(bags.find(x=>x.id===editId),data);toast('แก้ไขแล้ว')}
+  else{bags.push({id:uid(),status:'waiting',calls:[],disDone:[],...data});toast('รับถุงเข้าแล้ว')}
+  persist();closeAll();render();
+}
+
+/* ================= green add/edit ================= */
+let gEditId=null,pickedSession='am';
+document.querySelectorAll('#gSession button').forEach(btn=>btn.onclick=()=>{
+  pickedSession=btn.dataset.v;
+  document.querySelectorAll('#gSession button').forEach(x=>x.classList.toggle('on',x===btn));
+});
+function openGreenForm(id){
+  gEditId=id||null;
+  const g=id?greens.find(x=>x.id===id):null;
+  $('#gFormTitle').textContent=g?'แก้ไขเคสตีกลับ':'รับเคสการเงินตีกลับ (tag เขียว)';
+  $('#gQueue').value=g?g.queue:'';$('#gHN').value=g?g.hn:'';$('#gName').value=g?g.name||'':'';
+  $('#gPhone').value=g?g.phone||'':'';$('#gDate').value=g?g.date:todayISO();
+  $('#gReason').value=g?g.reason:'ผู้ป่วยปฏิเสธรับยา — ไม่สะดวกชำระ';
+  $('#gNotes').value=g?g.notes||'':'';
+  pickedSession=g?g.session:(new Date().getHours()<12?'am':'pm');
+  document.querySelectorAll('#gSession button').forEach(x=>x.classList.toggle('on',x.dataset.v===pickedSession));
+  $('#greenFormOverlay').classList.add('open');$('#gQueue').focus();
+}
+function saveGreenForm(){
+  const queue=$('#gQueue').value.trim(),hn=$('#gHN').value.trim();
+  if(!queue&&!hn){toast('กรอกเลขคิวหรือ HN อย่างน้อยหนึ่งอย่าง');return}
+  const data={queue,hn,name:$('#gName').value.trim(),phone:$('#gPhone').value.trim(),
+    date:$('#gDate').value||todayISO(),reason:$('#gReason').value,notes:$('#gNotes').value.trim(),session:pickedSession};
+  if(gEditId){Object.assign(greens.find(x=>x.id===gEditId),data);toast('แก้ไขแล้ว')}
+  else{greens.push({id:uid(),status:'open',calls:[],steps:[],...data});toast('รับเคสตีกลับแล้ว')}
+  persist();closeAll();render();
+}
+
+/* ================= green manage checklist ================= */
+let gManageId=null;
+function openGreenManage(id){
+  gManageId=id;const g=greens.find(x=>x.id===id);if(!g)return;
+  g.steps=g.steps||[];
+  $('#gWho').textContent=`${g.queue||''} · HN ${g.hn||''} · ${SESSION_LABEL[g.session]||''}`;
+  $('#gSteps').innerHTML=GREEN_STEPS.map((s,i)=>`
+    <label class="check-row ${s[2]?'critical':''} ${g.steps.includes(i)?'done':''}">
+      <input type="checkbox" ${g.steps.includes(i)?'checked':''} onchange="toggleGreenStep(${i},this.checked)">
+      <span class="t"><b>${i+1}. ${s[0]} ${s[2]?'<span class="crit">⚠ สำคัญ</span>':''}</b>${s[1]?`<span>${s[1]}</span>`:''}</span>
+    </label>`).join('');
+  $('#greenManageOverlay').classList.add('open');render();
+}
+function toggleGreenStep(i,on){
+  const g=greens.find(x=>x.id===gManageId);if(!g)return;
+  g.steps=g.steps||[];
+  if(i===0&&on&&!(g.calls||[]).length){
+    toast('ยังไม่มีบันทึกการโทร — กด 📞 บันทึกการโทร เก็บหลักฐานไว้ด้วยนะ');
+  }
+  if(on&&!g.steps.includes(i))g.steps.push(i);
+  if(!on)g.steps=g.steps.filter(x=>x!==i);
+  persist();openGreenManage(gManageId);
+}
+function finishGreen(){
+  const g=greens.find(x=>x.id===gManageId);if(!g)return;
+  if((g.steps||[]).length<GREEN_STEPS.length){toast('ยังติ๊กไม่ครบทุกขั้นตอน — โดยเฉพาะลบรายการเดิมในหน้า Master');return}
+  g.status='closed';g.closeReason='ส่งการเงินแล้ว · '+todayISO();
+  persist();closeAll();render();toast('ปิดเคสตีกลับเรียบร้อย');
+}
+function greenToDissolve(){
+  const g=greens.find(x=>x.id===gManageId);if(!g)return;
+  if(!confirm('ยืนยัน: ผู้ป่วยไม่เอายาแล้ว → สร้างเคสในแท็บถุงค้างชำระเพื่อสลายถุงต่อ?'))return;
+  const bag={id:uid(),status:'waiting',calls:(g.calls||[]).slice(),disDone:[],
+    queue:g.queue,hn:g.hn,name:g.name,phone:g.phone,date:g.date,type:'normal',
+    notes:'มาจากเคสการเงินตีกลับ ('+g.reason+')'+(g.notes?'\n'+g.notes:''),paidShip:false,fromGreen:true};
+  bags.push(bag);
+  g.status='closed';g.closeReason='ส่งไปสลายถุง · '+todayISO();
+  persist();closeAll();switchTab('bags');
+  openDissolve(bag.id);
+  toast('สร้างเคสสลายถุงแล้ว — เริ่ม checklist ได้เลย');
+}
+function reopenGreen(id){const g=greens.find(x=>x.id===id);if(!g)return;g.status='open';g.closeReason='';persist();render()}
+function removeGreen(id){if(!confirm('ลบเคสนี้ถาวร?'))return;greens=greens.filter(x=>x.id!==id);persist();render();toast('ลบแล้ว')}
+
+/* ================= call log (shared) ================= */
+let callId=null;
+function openCall(id){callId=id;$('#cResult').value='reach_keep';$('#cReason').value='';$('#cNote').value='';$('#callOverlay').classList.add('open')}
+function saveCall(){
+  const b=findAny(callId);if(!b)return;
+  b.calls=b.calls||[];
+  b.calls.push({date:todayISO(),result:$('#cResult').value,reason:$('#cReason').value,note:$('#cNote').value.trim()});
+  persist();closeAll();render();toast('บันทึกการโทรแล้ว — อย่าลืม Add Note ใน MS');
+}
+
+/* ================= dissolve ================= */
+let disId=null;
+function openDissolve(id){
+  disId=id;const b=bags.find(x=>x.id===id);if(!b)return;
+  if(b.status!=='dissolving'){
+    const confirmed=(b.calls||[]).some(c=>c.result!=='noreach');
+    if(!confirmed&&!confirm('ยังไม่มีบันทึกว่าโทร confirm ผู้ป่วยได้เลย\nต้องการเริ่มสลายถุงจริงหรือไม่?'))return;
+    b.status='dissolving';b.disDone=b.disDone||[];persist();
+  }
+  $('#disWho').textContent=`${b.queue||''} · HN ${b.hn||''}`;
+  $('#disSteps').innerHTML=DIS_STEPS.map((s,i)=>`
+    <label class="check-row ${b.disDone.includes(i)?'done':''}">
+      <input type="checkbox" ${b.disDone.includes(i)?'checked':''} onchange="toggleStep(${i},this.checked)">
+      <span class="t"><b>${i+1}. ${s[0]}</b>${s[1]?`<span>${s[1]}</span>`:''}</span>
+    </label>`).join('');
+  $('#disOverlay').classList.add('open');render();
+}
+function toggleStep(i,on){
+  const b=bags.find(x=>x.id===disId);if(!b)return;
+  b.disDone=b.disDone||[];
+  if(on&&!b.disDone.includes(i))b.disDone.push(i);
+  if(!on)b.disDone=b.disDone.filter(x=>x!==i);
+  persist();openDissolve(disId);
+}
+function finishDissolve(){
+  const b=bags.find(x=>x.id===disId);if(!b)return;
+  if(b.disDone.length<DIS_STEPS.length){toast('ยังติ๊กไม่ครบทุกขั้นตอน');return}
+  b.status='closed';b.closeReason='สลายถุงแล้ว · '+todayISO();
+  persist();closeAll();render();toast('ปิดเคส — สลายถุงเรียบร้อย');
+}
+
+/* ================= bag actions ================= */
+function closePaid(id){const b=bags.find(x=>x.id===id);if(!b)return;
+  if(!confirm('ยืนยันปิดเคส: ผู้ป่วยชำระ/มารับยาแล้ว?'))return;
+  b.status='closed';b.closeReason='ชำระ/รับยาแล้ว · '+todayISO();persist();render();toast('ปิดเคสแล้ว')}
+function reopen(id){const b=bags.find(x=>x.id===id);if(!b)return;b.status='waiting';b.closeReason='';persist();render()}
+function removeBag(id){if(!confirm('ลบเคสนี้ถาวร?'))return;bags=bags.filter(x=>x.id!==id);persist();render();toast('ลบแล้ว')}
+function closeAll(){document.querySelectorAll('.overlay').forEach(o=>o.classList.remove('open'))}
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)closeAll()}));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAll()});
+
+/* ================= import / export ================= */
+function download(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click()}
+function exportJSON(){download(`telemed-tracker-${todayISO()}.json`,JSON.stringify({bags,greens},null,2),'application/json');toast('สำรองข้อมูลแล้ว')}
+function importJSON(ev){
+  const f=ev.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{try{
+    const data=JSON.parse(r.result);
+    const nb=Array.isArray(data)?data:(data.bags||[]);
+    const ng=Array.isArray(data)?[]:(data.greens||[]);
+    if(!confirm(`นำเข้า ${nb.length} ถุง + ${ng.length} เคสตีกลับ — จะแทนที่ข้อมูลปัจจุบันทั้งหมด ยืนยัน?`))return;
+    bags=nb;greens=ng;persist();render();toast('นำเข้าข้อมูลแล้ว')
+  }catch(e){toast('ไฟล์ไม่ถูกต้อง')}};
+  r.readAsText(f);ev.target.value='';
+}
+function exportCSV(){
+  let head,rows,name;
+  if(activeTab==='bags'){
+    head=['คิว','HN','ชื่อ','วันที่รับเข้า','อายุ(วัน)','ประเภท','ค่าปรับ','สถานะ','โทรล่าสุด','หมายเหตุ'];
+    rows=bags.map(b=>{const st=statusInfo(b);const lc=(b.calls||[]).slice(-1)[0];
+      return [b.queue,b.hn,b.name||'',b.date,ageDays(b),TYPE_LABEL[b.type],TYPE_FEE[b.type],st.label,lc?lc.date:'',(b.notes||'').replace(/\n/g,' ')]});
+    name=`telemed-bags-${todayISO()}.csv`;
+  }else{
+    head=['คิว','HN','ชื่อ','วันที่ตีกลับ','รอบ','เหตุผล','ความคืบหน้า','สถานะ','โทรล่าสุด','หมายเหตุ'];
+    rows=greens.map(g=>{const st=greenStatusInfo(g);const lc=(g.calls||[]).slice(-1)[0];
+      return [g.queue,g.hn,g.name||'',g.date,SESSION_LABEL[g.session]||'',g.reason,`${(g.steps||[]).length}/${GREEN_STEPS.length}`,st.label,lc?lc.date:'',(g.notes||'').replace(/\n/g,' ')]});
+    name=`telemed-green-cases-${todayISO()}.csv`;
+  }
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));
+  download(name,'\uFEFF'+[head.join(','),...csv].join('\n'),'text/csv');
+}
+
+$('#search').addEventListener('input',render);
+$('#filterStatus').addEventListener('change',render);
+$('#filterGreen').addEventListener('change',render);
+render();
+</script>
+</body>
+</html>
